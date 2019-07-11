@@ -1,0 +1,60 @@
+version: "3.4"
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /data/www/ppp/:/data/www/:rw
+      - ./nginx/:/etc/nginx/:rw
+      - ./log/nginx/:/data/log/nginx/:rw
+    restart: always      
+    networks:
+      - net-php72
+
+  php72:
+    build: ./php72
+    expose:
+      - "9000"
+    volumes:
+      - /data/www/ppp/:/data/www/:rw
+      - ./php72/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./php72/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ./log/php72/:/data/log/php/:rw
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - net-php72
+      - net-mysql
+      - net-redis
+
+  mysql:
+    build: ./mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf:ro
+      - ./mysql/data/:/var/lib/mysql/:rw
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+    networks:
+      - net-mysql
+
+  redis:
+    image: redis:4.0
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - net-redis
+
+
+
+networks:
+  net-php72:
+  net-mysql:
+  net-redis:
+

@@ -5,4 +5,6 @@ FROM php:7.2-fpm
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install mysqli \
+&& pecl install redis \
+&& docker-php-ext-enable redis \

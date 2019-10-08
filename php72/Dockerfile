@@ -6,5 +6,6 @@ ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN docker-php-ext-install mysqli \
+&& docker-php-ext-install pdo_mysql \
 && pecl install redis \
 && docker-php-ext-enable redis \
